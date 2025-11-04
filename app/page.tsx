@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import FeaturedPost from "@/components/FeaturedPost";
 import PostCard from "@/components/PostCard";
 
@@ -22,10 +21,7 @@ export default function Home() {
   ];
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      {/* 🧭 Navbar */}
-      <Navbar />
-
+    <main>
       {/* 🏠 Hero Section */}
       <section className="text-center py-16 px-6 bg-gradient-to-b from-white to-blue-50">
         <h1 className="text-5xl font-extrabold text-blue-700 mb-4">
@@ -54,13 +50,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-
-      {/* ✉️ Footer */}
-      <footer className="mt-16 py-8 text-center bg-white border-t">
-        <p className="text-gray-600 text-sm">
-          © {new Date().getFullYear()} Deepak Singh’s Blog — Built with ❤️ using Next.js and Tailwind CSS
-        </p>
-      </footer>
     </main>
   );
 }

@@ -22,7 +22,6 @@ export default function MyBlog() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <Navbar />
       <section className="max-w-6xl mx-auto mt-10 px-6">
         <h1 className="text-3xl font-bold text-blue-700 mb-6">My Blog Posts</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
