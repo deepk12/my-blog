@@ -52,7 +52,7 @@ const FeaturedPost = () => {
         title: "Building the Ultimate Portfolio Site with Next.js and Tailwind CSS",
         date: "Nov 5, 2025",
         summary: "A comprehensive guide to leveraging modern frameworks to create a blazing-fast, visually stunning, and highly performant personal website. Learn advanced routing, dynamic data fetching, and animation techniques.",
-        image: "https://images.unsplash.com/photo-1549692520-d73117491763?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max",
+        image: "/images/featured.jpeg",
     };
 
     return (
