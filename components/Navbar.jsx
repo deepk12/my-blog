@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 // Replaced react-icons/fa with inline SVGs to ensure compilation
 import {
@@ -10,6 +10,13 @@ import {
   FaTimes,
   FaLinkedinIn
 } from "react-icons/fa";
+
+// --- SOCIAL LINKS CONFIGURATION ---
+const SOCIAL_LINKS = {
+    facebook: "https://www.facebook.com/yourusername",
+    instagram: "https://www.instagram.com/yourusername",
+    linkedin: "https://www.linkedin.com/in/yourusername"
+};
 
 // Variants for the main navigation container
 const navVariants = {
@@ -32,17 +39,41 @@ const menuVariants = {
 };
 
 // Inline SVG Components to replace react-icons
+// MODIFIED IconWrapper for line-based icons
 const IconWrapper = ({ children, size = 20, className = '' }) => (
-    <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    // Use 'stroke' for line icons and 'fill' for shape icons, 
+    // or set both to 'currentColor' for maximum compatibility.
+    <svg 
+        className={className} 
+        width={size} 
+        height={size} 
+        viewBox="0 0 24 24" 
+        stroke="currentColor" // Add stroke
+        strokeWidth="2" // Add stroke width
+        fill="none" // Set fill to none for line icons
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+    >
         {children}
     </svg>
 );
 
-const SearchIcon = (props) => (
-    <IconWrapper {...props}>
-        <path d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm12 4-4.3-4.3"/>
-    </IconWrapper>
+const LineIconWrapper = ({ children, size = 20, className = '' }) => (
+    <svg 
+        className={className} 
+        width={size} 
+        height={size} 
+        viewBox="0 0 24 24" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        fill="none" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+    >
+        {children}
+    </svg>
 );
+
 
 const FacebookIcon = (props) => (
     <IconWrapper {...props}>
@@ -96,7 +127,7 @@ export default function Navbar() {
         {/* Logo */}
         <h1 className="text-3xl font-extrabold tracking-tight text-blue-400 cursor-pointer hover:text-blue-300 transition-colors duration-300">
           <a href="/">
-            Dev<span className="text-white">Journal</span>
+            Deep's Dev<span className="text-white">Journal</span>
           </a>
         </h1>
 
@@ -123,22 +154,41 @@ export default function Navbar() {
 
         {/* Social Icons & Search */}
         <div className="hidden md:flex space-x-6 items-center text-gray-400">
-          <motion.div whileHover={{ scale: 1.1, color: '#3B82F6' }}>
-            <SearchIcon className="cursor-pointer transition" size={20} />
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.1, color: '#3B82F6' }}>
-            <FacebookIcon className="cursor-pointer transition" size={20} />
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.1, color: '#3B82F6' }}>
-            <InstagramIcon className="cursor-pointer transition" size={20} />
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.1, color: '#3B82F6' }}>
-            <LinkedInIcon className="cursor-pointer transition" size={20} />
-          </motion.div>
+          {/* <motion.div whileHover={{ scale: 1.1, color: '#3B82F6' }}
+            >
+            <SearchIcon className="transition" size={20} />
+          </motion.div> */}
+          <motion.a 
+            href={SOCIAL_LINKS.facebook} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            whileHover={{ scale: 1.1, color: '#3B82F6' }}
+            className="cursor-pointer"
+          >
+            <FacebookIcon className="transition" size={20} />
+          </motion.a>
+          <motion.a 
+            href={SOCIAL_LINKS.instagram} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            whileHover={{ scale: 1.1, color: '#3B82F6' }}
+            className="cursor-pointer"
+          >
+            <InstagramIcon className="transition" size={20} />
+          </motion.a>
+          <motion.a 
+            href={SOCIAL_LINKS.linkedin} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            whileHover={{ scale: 1.1, color: '#3B82F6' }}
+            className="cursor-pointer"
+          >
+            <LinkedInIcon className="transition" size={20} />
+          </motion.a>
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden text-gray-200">
+        <div className="md:hidden **text-blue-400**">
           <button onClick={() => setMenuOpen(!menuOpen)}>
             <AnimatePresence mode="wait" initial={false}>
                 <motion.div
@@ -149,9 +199,9 @@ export default function Navbar() {
                     transition={{ duration: 0.2 }}
                 >
                     {menuOpen ? (
-                        <TimesIcon size={24} className="text-blue-400" />
+                        <TimesIcon size={24}/>
                     ) : (
-                        <BarsIcon size={24} className="text-blue-400" />
+                        <BarsIcon size={24}/>
                     )}
                 </motion.div>
             </AnimatePresence>
