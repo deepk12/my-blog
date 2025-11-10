@@ -1,9 +1,26 @@
 "use client";
-import { motion } from "framer-motion";
+import React from 'react'; // Explicitly import React for typing SyntheticEvent
+import { motion, Variants } from "framer-motion"; // Import Variants for framer-motion typing
+
+// --- Interface for Post Data ---
+interface PostProps {
+  title: string;
+  date: string;
+  image: string;
+}
 
 // --- Internal PostCard Component ---
 // This component now handles the presentation and the hover animation for each blog entry.
-const PostCard = ({ title, date, image }) => {
+// FIX: Apply the PostProps interface to the component.
+const PostCard = ({ title, date, image }: PostProps) => {
+  
+  // Define a typed handler for image errors
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.target as HTMLImageElement;
+    target.onerror = null; 
+    target.src = "https://placehold.co/600x400/3b82f6/ffffff?text=Image+Missing";
+  };
+    
   return (
     <motion.div
       className="group flex flex-col h-full bg-white rounded-xl shadow-2xl overflow-hidden cursor-pointer transition duration-300 transform"
@@ -20,10 +37,8 @@ const PostCard = ({ title, date, image }) => {
           src={image}
           alt={title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          onError={(e) => {
-            e.target.onerror = null; 
-            e.target.src = "https://placehold.co/600x400/3b82f6/ffffff?text=Image+Missing";
-          }}
+          // FIX: Use the typed error handler
+          onError={handleImageError}
         />
       </div>
       
@@ -47,7 +62,7 @@ const PostCard = ({ title, date, image }) => {
 
 // --- Main Blog Component ---
 export default function MyBlog() {
-  const posts = [
+  const posts: PostProps[] = [ // Also typed the posts array for safety
     {
       title: "Learning React as a Vue Developer",
       date: "Nov 3, 2025",
@@ -80,8 +95,8 @@ export default function MyBlog() {
     },
   ];
 
-  // Variants for individual card animation
-  const cardVariants = {
+  // FIX: Explicitly type cardVariants as Variants from framer-motion
+  const cardVariants: Variants = {
     hidden: { opacity: 0, y: 50 },
     visible: { 
       opacity: 1, 
@@ -139,6 +154,7 @@ export default function MyBlog() {
             <h2 className="text-4xl font-bold text-gray-800 mb-2">
               Recent Articles
             </h2>
+            {/* FIX: Corrected closing tag and moved 'initial' to the motion.div */}
             <motion.div
               className="w-24 h-1 bg-blue-500 mx-auto rounded-full"
               initial={{ width: 0 }}

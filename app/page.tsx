@@ -1,10 +1,26 @@
 "use client";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence, Variants } from "framer-motion"; // Import Variants
 import { ChevronLeft, ChevronRight, Zap, BookOpen } from "lucide-react";
 
+// --- Interface for Post Data ---
+interface PostProps {
+  title: string;
+  date: string;
+  image: string;
+}
+
 // --- Internal PostCard Component (Reused from MyBlog.jsx) ---
-const PostCard = ({ title, date, image }) => {
+// FIX: Apply the PostProps interface to the component.
+const PostCard = ({ title, date, image }: PostProps) => {
+  
+  // Define a typed handler for image errors
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.target as HTMLImageElement;
+    target.onerror = null; 
+    target.src = "https://placehold.co/600x400/3b82f6/ffffff?text=Post+Image";
+  };
+    
   return (
     <motion.div
       className="group flex flex-col h-full bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transition duration-300 transform border border-gray-100"
@@ -21,10 +37,7 @@ const PostCard = ({ title, date, image }) => {
           src={image}
           alt={title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          onError={(e) => {
-            e.target.onerror = null; 
-            e.target.src = "https://placehold.co/600x400/3b82f6/ffffff?text=Post+Image";
-          }}
+          onError={handleImageError} // Use the typed handler
         />
       </div>
       
@@ -48,11 +61,18 @@ const PostCard = ({ title, date, image }) => {
 
 // --- Internal FeaturedPost Component ---
 const FeaturedPost = () => {
-    const featured = {
+    const featured: PostProps & { summary: string } = { // Explicitly type featured data
         title: "Building the Ultimate Portfolio Site with Next.js and Tailwind CSS",
         date: "Nov 5, 2025",
         summary: "A comprehensive guide to leveraging modern frameworks to create a blazing-fast, visually stunning, and highly performant personal website. Learn advanced routing, dynamic data fetching, and animation techniques.",
         image: "/images/featured.jpeg",
+    };
+    
+    // Define the image error handler for the featured post
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      const target = e.target as HTMLImageElement;
+      target.onerror = null; 
+      target.src = "https://placehold.co/600x400/1e40af/ffffff?text=FEATURED";
     };
 
     return (
@@ -70,10 +90,7 @@ const FeaturedPost = () => {
                         src={featured.image}
                         alt={featured.title}
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                            e.target.onerror = null; 
-                            e.target.src = "https://placehold.co/600x400/1e40af/ffffff?text=FEATURED";
-                        }}
+                        onError={handleImageError} // Use the typed handler
                     />
                 </div>
                 {/* Content Side */}
@@ -106,7 +123,7 @@ const FeaturedPost = () => {
 
 // --- Main Home Component ---
 export default function Home() {
-  const latestPosts = [
+  const latestPosts: PostProps[] = [ // Apply PostProps array type
     {
       title: "The Future of Web Development",
       date: "Nov 2, 2025",

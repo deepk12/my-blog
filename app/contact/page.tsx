@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react"; // Ensure React is imported for typing
+import { motion, Variants } from "framer-motion"; // Import Variants for framer-motion typing
+import { ChangeEvent } from "react"; // Import ChangeEvent for input handler typing
 
 // Variants for the form card
-const formVariants = {
+const formVariants: Variants = {
   hidden: { opacity: 0, y: 50, scale: 0.95 },
   visible: { 
     opacity: 1, 
@@ -32,11 +33,12 @@ export default function Contact() {
     message: "",
   });
   // State for tracking submission: 'idle', 'loading', 'success', 'error'
-  const [submissionState, setSubmissionState] = useState("idle"); 
+  const [submissionState, setSubmissionState] = useState<"idle" | "loading" | "success" | "error">("idle"); 
   // Unique ID for this session/sender, generated once
   const [senderId] = useState(generateSimpleId); 
 
-  const handleInputChange = (e) => {
+  // FIX: Explicitly type the event 'e' as a React ChangeEvent
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -44,7 +46,7 @@ export default function Contact() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (submissionState === "loading") return;
 
@@ -60,7 +62,8 @@ export default function Contact() {
 
     try {
       // API call to the specified endpoint
-      const response = await fetch("/blog/api/contact", {
+      // NOTE: This assumes you have created an API handler at /app/api/contact/route.ts
+      const response = await fetch("/api/contact", { 
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +88,9 @@ export default function Contact() {
       });
 
     } catch (error) {
-      console.error("Submission error:", error.message);
+      // Safely access error message
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      console.error("Submission error:", errorMessage);
       setSubmissionState("error");
     }
   };
