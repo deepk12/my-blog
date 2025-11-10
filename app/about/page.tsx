@@ -1,6 +1,6 @@
 "use client";
-import { motion, Variants } from "framer-motion";
-import React from 'react'; // Import React for the type definition
+import React from 'react'; // Import React for SyntheticEvent typing
+import { motion, Variants } from "framer-motion"; // FIX: Import Variants for type checking
 
 // Data for the Skills Section
 const skills = [
@@ -12,7 +12,7 @@ const skills = [
   { name: "Framer Motion", color: "text-pink-600", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
 ];
 
-// Animation variants for staggered section appearance
+// FIX: Explicitly type variants using the imported 'Variants' interface
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -23,14 +23,14 @@ const containerVariants: Variants = {
   },
 };
 
-// Animation variants for individual section cards
+// FIX: Explicitly type variants using the imported 'Variants' interface
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 50 },
   visible: { 
     opacity: 1, 
     y: 0, 
     transition: { 
-      type: "spring", 
+      type: "spring", // TypeScript now recognizes this as a valid literal
       stiffness: 100, 
       damping: 12 
     } 
@@ -40,16 +40,11 @@ const itemVariants: Variants = {
 // --- Main About Component ---
 export default function About() {
   const profileImageUrl = "https://placehold.co/160x160/3b82f6/ffffff?text=Deepak+S";
-
-  // FIX: Type the event handler correctly
+  
+  // FIX: Define the image error handler with correct TypeScript type
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-      // Assert that e.target is an HTMLImageElement to access .onerror and .src
       const target = e.target as HTMLImageElement;
-      
-      // Stop infinite loop by removing the handler
       target.onerror = null; 
-      
-      // Set the fallback image source
       target.src = "https://placehold.co/160x160/3b82f6/ffffff?text=DS";
   };
 
@@ -78,7 +73,7 @@ export default function About() {
               src={profileImageUrl}
               alt="Deepak Singh Profile"
               className="w-full h-full object-cover"
-              // Applied the fixed handler
+              // Use the typed handler
               onError={handleImageError}
             />
           </motion.div>
