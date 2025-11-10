@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import React from 'react'; // Import React for the type definition
 
 // Data for the Skills Section
@@ -13,7 +13,7 @@ const skills = [
 ];
 
 // Animation variants for staggered section appearance
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -24,7 +24,7 @@ const containerVariants = {
 };
 
 // Animation variants for individual section cards
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 50 },
   visible: { 
     opacity: 1, 
