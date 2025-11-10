@@ -13,9 +13,9 @@ import {
 
 // --- SOCIAL LINKS CONFIGURATION ---
 const SOCIAL_LINKS = {
-    facebook: "https://www.facebook.com/yourusername",
-    instagram: "https://www.instagram.com/yourusername",
-    linkedin: "https://www.linkedin.com/in/yourusername"
+    facebook: "https://www.facebook.com/deepak.king.7106",
+    instagram: "https://www.instagram.com/deepak_singh_d.k",
+    linkedin: "https://www.linkedin.com/in/deepak-singh-b33212248"
 };
 
 // Variants for the main navigation container
