@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { motion } from "framer-motion";
 
 // Variants for the form card
@@ -17,7 +18,118 @@ const formVariants = {
   },
 };
 
+// Simple ID generation fallback for the sender_id (to ensure a unique ID without requiring crypto.randomUUID or external libraries)
+const generateSimpleId = () => 
+  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+// Hardcoded ID for the recipient (the blog owner/user who owns the contact form)
+const RECIPIENT_USER_ID = "blog_owner_101";
+
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  // State for tracking submission: 'idle', 'loading', 'success', 'error'
+  const [submissionState, setSubmissionState] = useState("idle"); 
+  // Unique ID for this session/sender, generated once
+  const [senderId] = useState(generateSimpleId); 
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (submissionState === "loading") return;
+
+    setSubmissionState("loading");
+
+    const payload = {
+      user_id: RECIPIENT_USER_ID, // The ID of the blog owner/recipient
+      sender_id: senderId, // Unique ID for the sender's session
+      name: formData.name,
+      email: formData.email,
+      message: formData.message,
+    };
+
+    try {
+      // API call to the specified endpoint
+      const response = await fetch("/blog/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        // Handle non-200 responses
+        const errorData = await response.json().catch(() => ({ message: "Failed to send message due to server error." }));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      console.log("Message sent successfully:", response);
+      setSubmissionState("success");
+      
+      // Reset form data on success
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+      });
+
+    } catch (error) {
+      console.error("Submission error:", error.message);
+      setSubmissionState("error");
+    }
+  };
+  
+  const isFormDisabled = submissionState === "loading" || submissionState === "success";
+
+  // Component to render submission status messages
+  const StatusMessage = () => {
+    switch (submissionState) {
+      case "loading":
+        return (
+          <div className="flex items-center justify-center text-blue-600 font-semibold p-3 rounded-xl bg-blue-50">
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Sending Message...
+          </div>
+        );
+      case "success":
+        return (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl relative">
+            <span className="block sm:inline font-semibold">Success!</span> Your message has been sent.
+          </div>
+        );
+      case "error":
+        return (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative">
+            <span className="block sm:inline font-semibold">Error!</span> Something went wrong. Please try again.
+            <button
+                type="button"
+                onClick={() => setSubmissionState("idle")}
+                className="ml-4 text-sm font-semibold underline"
+            >
+                Dismiss
+            </button>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+
   return (
     <main className="min-h-screen bg-gray-50 font-inter">
       {/* Hero Section (Consistent Header Style) */}
@@ -101,36 +213,76 @@ export default function Contact() {
                 initial="hidden"
                 animate="visible"
             >
-                <form className="bg-white p-8 md:p-10 shadow-2xl rounded-xl space-y-6 border border-gray-200">
+                <form 
+                    className="bg-white p-8 md:p-10 shadow-2xl rounded-xl space-y-6 border border-gray-200"
+                    onSubmit={handleSubmit}
+                >
                     <h3 className="text-3xl font-bold text-blue-700 mb-6">Send a Message</h3>
                     
+                    {/* Status Message Area */}
+                    <StatusMessage />
+
                     <input
                         type="text"
+                        name="name"
                         placeholder="Your Name"
                         required
-                        className="w-full border-2 border-gray-200 rounded-lg px-5 py-3 focus:outline-none focus:border-blue-500 transition duration-300 placeholder-gray-500"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        disabled={isFormDisabled}
+                        className={`w-full border-2 rounded-lg px-5 py-3 transition duration-300 placeholder-gray-500 ${isFormDisabled ? 'bg-gray-100 text-gray-500 border-gray-100 cursor-not-allowed' : 'border-gray-200 focus:outline-none focus:border-blue-500'}`}
                     />
                     <input
                         type="email"
+                        name="email"
                         placeholder="Your Email"
                         required
-                        className="w-full border-2 border-gray-200 rounded-lg px-5 py-3 focus:outline-none focus:border-blue-500 transition duration-300 placeholder-gray-500"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        disabled={isFormDisabled}
+                        className={`w-full border-2 rounded-lg px-5 py-3 transition duration-300 placeholder-gray-500 ${isFormDisabled ? 'bg-gray-100 text-gray-500 border-gray-100 cursor-not-allowed' : 'border-gray-200 focus:outline-none focus:border-blue-500'}`}
                     />
                     <textarea
+                        name="message"
                         placeholder="Your Message"
                         rows={5}
                         required
-                        className="w-full border-2 border-gray-200 rounded-lg px-5 py-3 focus:outline-none focus:border-blue-500 transition duration-300 placeholder-gray-500 resize-none"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        disabled={isFormDisabled}
+                        className={`w-full border-2 rounded-lg px-5 py-3 transition duration-300 placeholder-gray-500 resize-none ${isFormDisabled ? 'bg-gray-100 text-gray-500 border-gray-100 cursor-not-allowed' : 'border-gray-200 focus:outline-none focus:border-blue-500'}`}
                     />
                     
                     <motion.button
                         type="submit"
-                        className="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 rounded-xl font-semibold text-lg shadow-md hover:bg-blue-700 transition duration-300"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        className={`w-full flex items-center justify-center space-x-2 py-3 rounded-xl font-semibold text-lg shadow-md transition duration-300 ${
+                            isFormDisabled
+                                ? 'bg-gray-400 text-gray-100 cursor-not-allowed'
+                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
+                        whileHover={!isFormDisabled ? { scale: 1.02 } : {}}
+                        whileTap={!isFormDisabled ? { scale: 0.98 } : {}}
+                        disabled={isFormDisabled}
                     >
-                        Send Message
-                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        {submissionState === 'loading' ? (
+                            <>
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Sending...</span>
+                            </>
+                        ) : submissionState === 'success' ? (
+                            <>
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Sent!</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>Send Message</span>
+                                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                            </>
+                        )}
                     </motion.button>
                 </form>
             </motion.div>
