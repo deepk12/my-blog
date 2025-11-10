@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import React from 'react'; // Import React for the type definition
 
 // Data for the Skills Section
 const skills = [
@@ -40,6 +41,18 @@ const itemVariants = {
 export default function About() {
   const profileImageUrl = "https://placehold.co/160x160/3b82f6/ffffff?text=Deepak+S";
 
+  // FIX: Type the event handler correctly
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      // Assert that e.target is an HTMLImageElement to access .onerror and .src
+      const target = e.target as HTMLImageElement;
+      
+      // Stop infinite loop by removing the handler
+      target.onerror = null; 
+      
+      // Set the fallback image source
+      target.src = "https://placehold.co/160x160/3b82f6/ffffff?text=DS";
+  };
+
   return (
     <main className="min-h-screen bg-gray-50 font-inter">
       {/* Background Gradient Effect */}
@@ -65,10 +78,8 @@ export default function About() {
               src={profileImageUrl}
               alt="Deepak Singh Profile"
               className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.onerror = null; 
-                e.target.src = "https://placehold.co/160x160/3b82f6/ffffff?text=DS";
-              }}
+              // Applied the fixed handler
+              onError={handleImageError}
             />
           </motion.div>
 
